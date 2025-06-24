@@ -1,0 +1,176 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    min-height: 100vh;
+    background-color: #f0f8ff; /* Light Alice Blue */
+    margin: 0;
+    padding-top: 20px; /* Add some padding at the top */
+    box-sizing: border-box;
+}
+
+.bingo-caller-app {
+    background-color: #ffffff; /* White */
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    width: 90%;
+    max-width: 600px; /* Max width for larger screens */
+}
+
+header h1 {
+    color: #ff4500; /* OrangeRed */
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.controls {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Space between control elements */
+    flex-wrap: wrap; /* Allow controls to wrap on smaller screens */
+}
+
+.controls button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#startButton {
+    background-color: #28a745; /* Green */
+}
+
+#startButton:hover {
+    background-color: #218838; /* Darker Green */
+}
+
+#stopButton {
+    background-color: #dc3545; /* Red */
+}
+
+#stopButton:hover {
+    background-color: #c82333; /* Darker Red */
+}
+
+.controls label {
+    font-size: 1em;
+    color: #333;
+}
+
+.controls input[type="number"] {
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 60px; /* Fixed width for interval input */
+}
+
+.called-ball-display {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #e9ecef; /* Light grey */
+    border-radius: 10px;
+}
+
+.ball {
+    width: 120px;
+    height: 120px;
+    background-color: #007bff; /* Blue */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px auto; /* Center the ball and add margin below */
+    font-size: 3em;
+    font-weight: bold;
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), 0 0 10px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease-out, background-color 0.3s ease;
+}
+
+/* Animation for newly called ball */
+.ball.new-call-animation {
+    transform: scale(1.15);
+    background-color: #ffc107; /* Yellow for emphasis */
+}
+
+#lastCalledMessage {
+    font-size: 1.2em;
+    color: #555;
+    min-height: 1.5em; /* Prevent layout shift */
+}
+
+.called-numbers-history {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa; /* Very light grey */
+    border-radius: 8px;
+}
+
+.called-numbers-history h2 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#historyContainer {
+    display: flex;
+    flex-wrap: wrap; /* Allow balls to wrap */
+    gap: 8px; /* Space between history balls */
+    justify-content: center; /* Center history balls */
+    min-height: 50px; /* Ensure container has some height even when empty */
+}
+
+.history-ball {
+    width: 40px;
+    height: 40px;
+    background-color: #6c757d; /* Grey */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+/* Different colors for ranges of bingo balls, for a bit more visual flair */
+.ball-color-1-15 { background-color: #dc3545; } /* Red */
+.ball-color-16-30 { background-color: #ffc107; color: #333 } /* Yellow */
+.ball-color-31-45 { background-color: #007bff; } /* Blue */
+.ball-color-46-60 { background-color: #28a745; } /* Green */
+.ball-color-61-75 { background-color: #fd7e14; } /* Orange */
+.ball-color-76-90 { background-color: #6f42c1; } /* Indigo */
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    .controls button {
+        padding: 10px 15px;
+        font-size: 1em;
+    }
+
+    .ball {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5em;
+    }
+
+    .history-ball {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9em;
+    }
+}
