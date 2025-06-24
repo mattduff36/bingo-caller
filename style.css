@@ -1,29 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400&display=swap');
+
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif; /* Changed default font */
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align to the top */
+    align-items: flex-start;
     min-height: 100vh;
     background-color: #f0f8ff; /* Light Alice Blue */
     margin: 0;
-    padding-top: 20px; /* Add some padding at the top */
+    padding: 15px; /* Adjusted padding for better fit */
     box-sizing: border-box;
 }
 
 .bingo-caller-app {
     background-color: #ffffff; /* White */
-    padding: 25px;
+    padding: 20px; /* Adjusted padding */
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     text-align: center;
-    width: 90%;
-    max-width: 600px; /* Max width for larger screens */
+    width: 100%; /* Full width within padding */
+    max-width: 700px; /* Slightly increased max-width for board */
+    display: flex;
+    flex-direction: column;
 }
 
 header h1 {
+    font-family: 'Montserrat', sans-serif; /* Cooler font */
     color: #ff4500; /* OrangeRed */
     margin-bottom: 20px;
-    font-size: 2.5em;
+    font-size: 2.8em; /* Slightly larger */
+    text-transform: uppercase; /* UPPERCASE */
+    letter-spacing: 2px; /* Added letter spacing */
 }
 
 .controls {
@@ -109,41 +116,55 @@ header h1 {
     min-height: 1.5em; /* Prevent layout shift */
 }
 
-.called-numbers-history {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa; /* Very light grey */
+
+/* Bingo Board Grid Styles */
+.bingo-board-container {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 10 balls per row */
+    gap: 5px; /* Gap between balls */
+    padding: 10px;
+    background-color: #f8f9fa;
     border-radius: 8px;
+    margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.called-numbers-history h2 {
-    color: #333;
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-#historyContainer {
-    display: flex;
-    flex-wrap: wrap; /* Allow balls to wrap */
-    gap: 8px; /* Space between history balls */
-    justify-content: center; /* Center history balls */
-    min-height: 50px; /* Ensure container has some height even when empty */
-}
-
-.history-ball {
-    width: 40px;
-    height: 40px;
-    background-color: #6c757d; /* Grey */
-    color: white;
+.board-ball {
+    width: 100%; /* Make ball responsive within grid cell */
+    padding-bottom: 100%; /* Maintain aspect ratio 1:1 */
+    position: relative; /* For centering content */
     border-radius: 50%;
+    background-color: #d0d0d0; /* Initial greyed-out color */
+    color: #555;
+    font-size: 0.9em; /* Adjusted for smaller balls */
+    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1em;
-    font-weight: bold;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2);
+    transition: background-color 0.4s ease, color 0.4s ease, transform 0.2s ease; /* Smooth transition for called state */
+}
+
+.board-ball span { /* Content wrapper for absolute positioning */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.board-ball.called {
+    color: white; /* Default text color for called balls */
+    transform: scale(1.05); /* Slight pop effect */
 }
 
 /* Different colors for ranges of bingo balls, for a bit more visual flair */
+/* These will be applied to .board-ball.called */
 .ball-color-1-15 { background-color: #dc3545; } /* Red */
 .ball-color-16-30 { background-color: #ffc107; color: #333 } /* Yellow */
 .ball-color-31-45 { background-color: #007bff; } /* Blue */
@@ -168,9 +189,36 @@ header h1 {
         font-size: 2.5em;
     }
 
-    .history-ball {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9em;
+    /* Adjust board ball font size for smaller screens */
+    .board-ball {
+        font-size: 0.7em; /* Further reduce font size for small balls */
+    }
+    .controls {
+        gap: 8px; /* Reduce gap in controls */
+    }
+    .controls button {
+        padding: 10px 12px; /* Adjust button padding */
+    }
+    header h1 {
+        font-size: 2.2em; /* Adjust title size for mobile */
+        letter-spacing: 1px;
+    }
+    .bingo-caller-app {
+        padding: 15px; /* Reduce padding on very small screens */
+    }
+}
+
+@media (max-width: 360px) {
+    .board-ball {
+        font-size: 0.6em; /* Even smaller for very narrow screens */
+        font-weight: normal; /* May need to reduce weight if numbers clip */
+    }
+     header h1 {
+        font-size: 1.8em;
+    }
+    .ball { /* Main display ball */
+        width: 80px;
+        height: 80px;
+        font-size: 2em;
     }
 }
