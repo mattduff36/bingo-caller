@@ -192,4 +192,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeNumbers(); // Prepare numbers 1-90 for calling
     stopButton.disabled = true; // Initially stop is disabled
     lastCalledMessage.textContent = 'Welcome! Press Start to begin.';
+
+    // Register Service Worker for PWA capabilities
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { // Use window.load to ensure page is fully loaded
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        });
+    }
 });
