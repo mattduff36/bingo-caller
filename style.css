@@ -116,6 +116,20 @@ header h1 {
     min-height: 1.5em; /* Prevent layout shift */
 }
 
+.nickname-explanation {
+    font-size: 0.95em;
+    color: #495057; /* Dark grey for text */
+    margin-top: 10px; /* Space above the explanation */
+    padding: 8px 12px;
+    background-color: #e9ecef; /* Light grey background */
+    border-radius: 6px;
+    min-height: 40px; /* Give it some default height */
+    line-height: 1.4;
+    font-style: italic;
+    text-align: center; /* Center the text if it's short */
+}
+
+/* Bingo Board Grid Styles */
 
 /* Bingo Board Grid Styles */
 .bingo-board-container {

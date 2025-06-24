@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ballDisplay = document.getElementById('ballDisplay'); // Main large ball
     const ballNumberDisplay = document.getElementById('ballNumber'); // Number in main large ball
     const lastCalledMessage = document.getElementById('lastCalledMessage');
+    const nicknameExplanationDisplay = document.getElementById('nicknameExplanationDisplay'); // For nickname explanation
     const bingoBoardContainer = document.getElementById('bingoBoardContainer'); // Grid for 90 balls
 
     let numbersPool = []; // Numbers 1-90 available to be called
@@ -48,17 +49,42 @@ document.addEventListener('DOMContentLoaded', () => {
             ballDisplay.classList.remove('new-call-animation');
         }, 500); // Animation duration should match CSS
 
-        lastCalledMessage.textContent = `Last called: ${number}`;
-        speakNumber(number); // Speak the called number
+        const nicknameInfo = bingoNicknames[number];
+        let explanationText = "";
+        if (nicknameInfo && nicknameInfo.explanation) {
+            explanationText = nicknameInfo.explanation;
+        }
+        nicknameExplanationDisplay.textContent = explanationText;
+        lastCalledMessage.textContent = `Last called: ${number}`; // Keep this for quick visual
+
+        speakNumberWithNickname(number);
         updateBoardBall(number); // Update the corresponding ball on the grid
     }
 
-    function speakNumber(number) {
+    function speakNumberWithNickname(number) {
         if ('speechSynthesis' in window) {
-            // Cancel any previous utterance to prevent overlap if calls are very fast
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(number.toString());
-            // utterance.lang = 'en-GB'; // Optional: set language for accent
+            speechSynthesis.cancel(); // Clear queue
+
+            const nicknameInfo = bingoNicknames[number];
+            let textToSpeak;
+
+            if (nicknameInfo && nicknameInfo.nickname) {
+                textToSpeak = `${nicknameInfo.nickname}. Number ${number}.`;
+            } else {
+                textToSpeak = `Number ${number}.`;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            // utterance.lang = 'en-GB'; // Example: British English
+            // Add a slight pause manually if needed, though sentence structure might suffice
+            // For more precise pauses, one might need to queue utterances, but it adds complexity.
+            // For example:
+            // const part1 = new SpeechSynthesisUtterance(nicknameInfo.nickname);
+            // const part2 = new SpeechSynthesisUtterance(`number ${number}`);
+            // speechSynthesis.speak(part1);
+            // part1.onend = () => { speechSynthesis.speak(part2); };
+            // However, for now, a single string is simpler.
+
             speechSynthesis.speak(utterance);
         } else {
             console.log("Speech synthesis not supported by this browser.");
@@ -147,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ballNumberDisplay.textContent = '--';
         ballDisplay.className = 'ball'; // Reset main display ball color
         lastCalledMessage.textContent = 'Game reset. Waiting to start...';
+        nicknameExplanationDisplay.textContent = ''; // Clear explanation on reset
         startButton.disabled = false;
         stopButton.disabled = true;
         intervalInput.disabled = false;
