@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Caller</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bingo-caller-app">
+        <header>
+            <h1>Bingo Caller</h1>
+        </header>
+
+        <div class="controls">
+            <button id="startButton">Start</button>
+            <button id="stopButton">Stop</button>
+            <label for="intervalInput">Interval (seconds):</label>
+            <input type="number" id="intervalInput" value="5" min="1">
+        </div>
+
+        <div class="called-ball-display">
+            <div id="ballDisplay" class="ball">
+                <span id="ballNumber">--</span>
+            </div>
+            <p id="lastCalledMessage">Waiting to start...</p>
+        </div>
+
+        <div class="called-numbers-history">
+            <h2>Called Numbers:</h2>
+            <div id="historyContainer">
+                <!-- Called numbers will be appended here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
