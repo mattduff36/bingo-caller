@@ -176,49 +176,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function createBingoBoard(container, isExpanded = false) {
+    function createBingoBoard(container) {
         container.innerHTML = ''; // Clear previous board
 
         for (let i = 1; i <= 90; i++) {
             const ball = document.createElement('div');
             ball.classList.add('board-ball');
-            ball.id = `${isExpanded ? 'expanded-' : ''}board-ball-${i}`;
+            ball.id = `board-ball-${i}`;
 
             const numberSpan = document.createElement('span');
             numberSpan.textContent = i;
             ball.appendChild(numberSpan);
-
-            // If the board is the expanded one, add a placeholder for the call order
-            if (isExpanded) {
-                const callOrderSpan = document.createElement('span');
-                callOrderSpan.classList.add('call-order');
-                ball.appendChild(callOrderSpan);
-            }
             
             container.appendChild(ball);
         }
     }
 
     function updateExpandedBoard() {
-        const expandedContainer = document.getElementById('expandedBingoBoard');
-        createBingoBoard(expandedContainer, true); // Re-create the structure
-
-        calledNumbers.forEach((number, index) => {
-            const boardBall = document.getElementById(`expanded-board-ball-${number}`);
-            if (boardBall) {
-                boardBall.classList.add('called');
-                const colorClass = getBallColorClass(number);
-                if (colorClass) {
-                    boardBall.classList.add(colorClass);
-                }
-                const callOrderSpan = boardBall.querySelector('.call-order');
-                if(callOrderSpan) {
-                    callOrderSpan.textContent = index + 1;
-                }
-            }
-        });
-        
-        // Update recent calls
+        // This function now only updates the recent calls display.
         const recentCallsBallsContainer = document.querySelector('.recent-calls-balls');
         const recentCallsContainer = document.getElementById('recentCallsContainer');
         recentCallsBallsContainer.innerHTML = ''; // Clear previous balls
