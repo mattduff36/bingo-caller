@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalButton = document.getElementById('closeModalButton');
     const settingsModal = document.getElementById('settingsModal');
     const expandedBoardModal = document.getElementById('expandedBoardModal');
-    const closeExpandedBoardButton = document.getElementById('closeExpandedBoardButton');
     const addToHomeScreenButton = document.getElementById('addToHomeScreenButton');
     
     // New Universal Install Modal Elements
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let calledNumbers = [];
     let callIntervalId = null;
     let isPaused = true;
-    let currentInterval = 5000;
+    let currentInterval = 4000; // Default interval to 4 seconds
     let voices = [];
     let previousNumber = null;
     let deferredPrompt;
@@ -57,13 +56,41 @@ document.addEventListener('DOMContentLoaded', () => {
             voiceSelector.innerHTML = '<option>No voices available</option>';
             return;
         }
-        const preferredVoiceKeywords = ['Google', 'Microsoft', 'Natural', 'Aria', 'Zira', 'David', 'Mark', 'Guy', 'Jenny', 'Daniel'];
-        const englishVoices = voices
-            .map((voice, index) => ({ voice, index }))
-            .filter(({ voice }) => voice.lang.startsWith('en-'));
-        const preferredVoices = englishVoices.filter(({ voice }) => preferredVoiceKeywords.some(kw => voice.name.includes(kw)));
-        const otherVoices = englishVoices.filter(v => !preferredVoices.includes(v));
-        const curatedVoices = [...preferredVoices, ...otherVoices].slice(0, 15);
+
+        // Use a Map to get unique voices by name, preferring Google-backed voices if names are identical
+        const voiceMap = new Map();
+        for (const voice of voices) {
+            if (!voice.lang.startsWith('en-')) continue;
+
+            const existing = voiceMap.get(voice.name);
+            // Prioritize Google voices as they are often higher quality
+            if (!existing || (existing && !existing.voiceURI.includes('Google') && voice.voiceURI.includes('Google'))) {
+                voiceMap.set(voice.name, voice);
+            }
+        }
+        const uniqueVoices = Array.from(voiceMap.values());
+        
+        // Find the preferred Daniel voice
+        const danielVoice = uniqueVoices.find(v => v.name.includes('Daniel') && v.lang === 'en-GB');
+
+        // Get other preferred voices
+        const preferredKeywords = ['Google', 'Microsoft', 'Natural'];
+        const otherPreferredVoices = uniqueVoices.filter(v => 
+            v !== danielVoice && preferredKeywords.some(kw => v.name.includes(kw))
+        );
+
+        // Combine and build the final list
+        let curatedVoices = [];
+        if (danielVoice) {
+            curatedVoices.push(danielVoice);
+        }
+        curatedVoices.push(...otherPreferredVoices);
+        
+        // Add other voices if we still have space, up to 5
+        const remainingVoices = uniqueVoices.filter(v => !curatedVoices.includes(v));
+        curatedVoices.push(...remainingVoices);
+        
+        curatedVoices = curatedVoices.slice(0, 5);
 
         if (curatedVoices.length === 0) {
             voiceSelector.innerHTML = '<option>No English voices found</option>';
@@ -71,12 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let defaultVoiceIndex = -1;
-        curatedVoices.forEach(({ voice, index }, i) => {
+        curatedVoices.forEach((voice, i) => {
+            const originalIndex = voices.findIndex(v => v.voiceURI === voice.voiceURI);
             const option = document.createElement('option');
             option.textContent = `${voice.name} (${voice.lang})`;
-            option.setAttribute('data-voice-index', index);
+            option.setAttribute('data-voice-index', originalIndex);
             voiceSelector.appendChild(option);
-            if (voice.name.includes('Daniel') && voice.lang === 'en-GB') {
+            if (voice === danielVoice) {
                 defaultVoiceIndex = i;
             }
         });
@@ -95,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastCalledMessage.textContent = previousNumber ? `Previous number: ${previousNumber}` : 'First number called!';
         speakNumberWithNickname(number);
         updateBoardBall(number);
+        updateExpandedBoard(); // Update the "last 5" display in real-time
     }
 
     function speakNumberWithNickname(number) {
@@ -115,10 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const boardBall = document.getElementById(`board-ball-${number}`);
         if (boardBall) {
             boardBall.classList.add('called', getBallColorClass(number));
-            const callOrderSpan = document.createElement('span');
-            callOrderSpan.className = 'call-order';
-            callOrderSpan.textContent = calledNumbers.length;
-            boardBall.appendChild(callOrderSpan);
         }
     }
 
@@ -140,16 +165,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const recentCallsBallsContainer = document.querySelector('.recent-calls-balls');
         recentCallsBallsContainer.innerHTML = '';
         const recent = calledNumbers.slice(-5).reverse();
+        
         if (recent.length > 0) {
-            recent.forEach(number => {
+            recent.forEach((number, index) => {
                 const ball = document.createElement('div');
-                ball.className = `board-ball called ${getBallColorClass(number)}`;
+                ball.className = `recent-ball called ${getBallColorClass(number)}`;
+                
                 const numberSpan = document.createElement('span');
                 numberSpan.textContent = number;
                 ball.appendChild(numberSpan);
+
+                // Add animation to the newest ball only
+                if (index === 0 && calledNumbers.length > 1) {
+                    ball.classList.add('new-recent-ball');
+                }
+
                 recentCallsBallsContainer.appendChild(ball);
             });
-            document.getElementById('recentCallsContainer').style.display = 'flex';
+            document.getElementById('recentCallsContainer').style.display = 'block';
         } else {
             document.getElementById('recentCallsContainer').style.display = 'none';
         }
@@ -172,9 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isPaused) {
             isPaused = false;
             ballDisplay.classList.add('in-progress');
-            if (calledNumbers.length > 0) { // If resuming, call a number immediately
-                callNextNumber();
-            }
+            callNextNumber(); // Call the first number immediately
             callIntervalId = setInterval(callNextNumber, currentInterval);
         }
     }
@@ -183,6 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = true;
         clearInterval(callIntervalId);
         ballDisplay.classList.remove('in-progress');
+        // Only show "paused" if the game is not over and there are called numbers
+        if (numbersPool.length > 0 && calledNumbers.length > 0) {
+            lastCalledMessage.textContent = 'Calling paused.';
+        }
     }
 
     function toggleCalling() {
@@ -197,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stopCalling();
         initializeNumbers();
         createBingoBoard(bingoBoardContainer);
-        updateExpandedBoard(); // Clears recent calls
+        updateExpandedBoard(); // Clears recent calls display
         ballNumberDisplay.textContent = '--';
         lastCalledMessage.textContent = 'Game reset. Click the ball to begin.';
         nicknameExplanationDisplay.textContent = '';
@@ -257,10 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsButton.addEventListener('click', () => settingsModal.style.display = 'flex');
     closeModalButton.addEventListener('click', () => settingsModal.style.display = 'none');
     bingoBoardContainer.addEventListener('click', () => {
+        // Just show the modal, content is updated in real-time
         updateExpandedBoard();
         expandedBoardModal.style.display = 'flex';
     });
-    closeExpandedBoardButton.addEventListener('click', () => expandedBoardModal.style.display = 'none');
 
     window.addEventListener('click', e => {
         if (e.target === settingsModal) settingsModal.style.display = 'none';
@@ -301,14 +336,20 @@ document.addEventListener('DOMContentLoaded', () => {
     closeInstallModalButton.addEventListener('click', hideInstallPrompt);
     
     // --- Initialisation ---
-    initializeNumbers();
-    if ('speechSynthesis' in window) {
-        speechSynthesis.onvoiceschanged = populateVoiceList;
+    function init() {
+        initializeNumbers();
+        createBingoBoard(bingoBoardContainer);
+        lastCalledMessage.textContent = 'Welcome! Click the ball to begin.';
+        
+        // Voices may load asynchronously. We need to handle that.
+        populateVoiceList();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
     }
-    populateVoiceList(); // Call it once directly
-    createBingoBoard(bingoBoardContainer);
-    lastCalledMessage.textContent = 'Welcome! Click the ball to begin.';
     
+    init();
+
     // Show install button on page load if on iOS and not already installed.
     if (isIos() && !window.navigator.standalone) {
         addToHomeScreenButton.style.display = 'block';

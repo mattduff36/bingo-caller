@@ -254,7 +254,9 @@ header h1 {
     justify-content: center;
     align-items: center;
     box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2);
-    transition: background-color 0.4s ease, color 0.4s ease, transform 0.2s ease;
+    transition: background-color 0.4s ease, color 0.4s ease, transform 0.4s ease;
+    animation: flip-in 0.5s ease-out forwards;
+    opacity: 0;
 }
 
 .board-ball span { /* Content wrapper for absolute positioning */
@@ -288,9 +290,26 @@ header h1 {
 .ball-color-61-75 { background-color: #fd7e14; } /* Orange */
 .ball-color-76-90 { background-color: #6f42c1; } /* Indigo */
 
-.board-ball .call-order {
-    display: none; /* Hidden by default in the main board */
+/* Call order display is removed, so styles are no longer needed */
+/*.board-ball .call-order {
+    display: none; 
+    position: absolute;
+    font-size: 0.6em;
+    bottom: 3px;
+    right: 3px;
+    color: #000;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    font-weight: bold;
 }
+
+.board-ball.called .call-order {
+    display: block;
+}*/
 
 /* =================================== */
 /* == Responsive Design Adjustments == */
@@ -454,11 +473,10 @@ button.settings-button:hover {
 
 .modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
 }
 
 .modal-header h2 {
@@ -491,89 +509,81 @@ button.settings-button:hover {
 /* =========================== */
 
 .expanded-board-content {
-    width: auto;
-    max-width: 95vw;
-    display: flex;
-    flex-direction: column;
-    /* Apply safe-area padding directly to the modal content */
-    padding-left: calc(20px + env(safe-area-inset-left));
-    padding-right: calc(20px + env(safe-area-inset-right));
-    padding-top: calc(20px + env(safe-area-inset-top));
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    max-width: fit-content; /* Make width fit content */
+    width: auto; /* Ensure width is not fixed */
 }
 
 .expanded-board-content .modal-body {
-    padding: 0; /* No padding needed for an empty body */
-    min-height: 0;
-}
-
-.modal-footer {
-    padding: 1rem;
-    border-top: 1px solid #ddd;
-    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa; /* Match board background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .recent-calls-container {
-    margin-bottom: 0; /* Remove margin as it's in the footer now */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 1.1em;
-    min-height: 45px; /* Ensure footer has a consistent height */
+    padding: 10px;
+    background-color: transparent; /* No extra background needed */
+    border-radius: 8px;
+    display: block; 
+    text-align: center;
 }
 
 .recent-calls-label {
-    font-weight: bold;
-    color: #333;
+    display: none; /* Hide label as modal title is sufficient */
 }
 
 .recent-calls-balls {
     display: flex;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
+    min-height: 45px; /* Give space even when empty */
+}
+
+/* This is the class for balls in the "Last 5" display */
+.recent-ball {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: white;
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2);
 }
 
 .recent-calls-balls .board-ball {
-    width: 40px; /* Smaller size for recent balls */
+    width: 40px; /* Small ball size */
     height: 40px;
-    font-size: 1em;
+    font-size: 1.1em; /* Adjust font size for smaller ball */
+    position: relative;
     padding-bottom: 0; /* Override aspect ratio hack */
-    flex-shrink: 0; /* Prevent balls from shrinking */
 }
 
-/* Styles for the expanded board inside the modal */
-.bingo-board-container.expanded {
-    cursor: default;
-    gap: 6px; /* Slightly more space between balls */
+.recent-calls-balls .board-ball span {
+    position: static; /* Override absolute positioning */
+    transform: none;
 }
 
-.bingo-board-container.expanded:hover {
-    box-shadow: none;
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.bingo-board-container.expanded .board-ball {
-    font-size: 1.1em; /* Adjust font size for clarity */
-}
-
-.bingo-board-container.expanded .board-ball .call-order {
-    display: block;
-    position: absolute;
-    bottom: 1px;
-    right: 1px;
-    font-size: 0.45em;
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.7); /* Lighter background for better contrast */
-    color: #000;
-    border-radius: 50%;
-    width: 14px;
-    height: 14px;
-    line-height: 14px;
-    text-align: center;
-    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+.recent-ball.new-recent-ball {
+    animation: slideInLeft 0.5s ease-out;
 }
 
 #settingsModal .modal-content {
-    width: 85%; /* Reduce width to create side gaps */
+    max-width: 400px;
 }
 
 .controls .input-group {
