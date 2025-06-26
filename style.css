@@ -452,28 +452,44 @@ button.settings-button:hover {
     to { opacity: 1; transform: scale(1); }
 }
 
+/* =========================== */
+/* == Expanded Board Redesign == */
+/* =========================== */
+
 .expanded-board-content {
-    width: 95%;
-    height: 95%;
-    max-width: 1200px;
+    width: auto;
+    height: auto;
+    max-width: 95vw;
+    max-height: 90vh; /* Use vh to be responsive to screen height */
     display: flex;
     flex-direction: column;
+    /* Apply safe-area padding directly to the modal content */
+    padding-left: calc(20px + env(safe-area-inset-left));
+    padding-right: calc(20px + env(safe-area-inset-right));
+    padding-top: calc(20px + env(safe-area-inset-top));
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
 .expanded-board-content .modal-body {
     flex-grow: 1;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+    padding: 15px 0; /* Add some vertical padding */
+}
+
+.modal-footer {
+    flex-shrink: 0;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
 }
 
 .recent-calls-container {
-    margin-bottom: 15px;
+    margin-bottom: 0; /* Remove margin as it's in the footer now */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     font-size: 1.1em;
+    min-height: 45px; /* Ensure footer has a consistent height */
 }
 
 .recent-calls-label {
@@ -497,7 +513,7 @@ button.settings-button:hover {
 /* Styles for the expanded board inside the modal */
 .bingo-board-container.expanded {
     cursor: default;
-    flex-grow: 1; /* Allow grid to fill available space */
+    gap: 6px; /* Slightly more space between balls */
 }
 
 .bingo-board-container.expanded:hover {
@@ -505,23 +521,24 @@ button.settings-button:hover {
 }
 
 .bingo-board-container.expanded .board-ball {
-    font-size: 1.2em; /* Larger font for expanded view */
+    font-size: 1.1em; /* Adjust font size for clarity */
 }
 
 .bingo-board-container.expanded .board-ball .call-order {
     display: block;
     position: absolute;
-    bottom: -2px;
-    right: 2px;
-    font-size: 0.5em;
-    font-weight: normal;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    bottom: 1px;
+    right: 1px;
+    font-size: 0.45em;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.7); /* Lighter background for better contrast */
+    color: #000;
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
     text-align: center;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
 
 #settingsModal .modal-content {

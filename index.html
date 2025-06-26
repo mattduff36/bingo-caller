@@ -76,16 +76,18 @@
                 <button id="closeExpandedBoardButton" class="close-button" aria-label="Close Expanded Board">&times;</button>
             </header>
             <div class="modal-body">
+                <div id="expandedBingoBoard" class="bingo-board-container expanded">
+                    <!-- Expanded 90-ball grid will be dynamically inserted here -->
+                </div>
+            </div>
+            <footer class="modal-footer">
                 <div id="recentCallsContainer" class="recent-calls-container">
                     <span class="recent-calls-label">Last 5:</span>
                     <div class="recent-calls-balls">
                         <!-- Most recent calls will be rendered here as balls -->
                     </div>
                 </div>
-                <div id="expandedBingoBoard" class="bingo-board-container expanded">
-                    <!-- Expanded 90-ball grid will be dynamically inserted here -->
-                </div>
-            </div>
+            </footer>
         </div>
     </div>
 
