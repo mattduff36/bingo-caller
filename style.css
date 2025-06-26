@@ -33,6 +33,36 @@ header h1 {
     letter-spacing: 2px; /* Added letter spacing */
 }
 
+.controls .icon-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0;
+    color: #555; /* Default color for icon buttons */
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    transition: color 0.3s ease;
+}
+
+.controls .icon-button:hover {
+    color: #000;
+}
+
+#resetButton.icon-button {
+    background-color: #dc3545; /* Red background */
+    color: white; /* White icon */
+    border-radius: 8px; /* Match other buttons */
+    padding: 8px; /* A bit more padding */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Add transition */
+}
+
+#resetButton.icon-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+    color: white;
+}
+
 .controls {
     margin-bottom: 25px;
     display: flex;
@@ -93,7 +123,7 @@ header h1 {
     font-size: 1em;
     border-radius: 5px;
     border: 1px solid #ccc;
-    width: 60px; /* Fixed width for interval input */
+    width: 55px; /* Fixed width for interval input */
 }
 
 .called-ball-display {
@@ -148,7 +178,7 @@ header h1 {
 /* Bingo Board Grid Styles */
 .bingo-board-container {
     display: grid;
-    grid-template-columns: repeat(10, 1fr); /* Default: 10 balls per row */
+    grid-template-columns: repeat(10, 1fr); /* Always 10 columns */
     gap: 5px;
     padding: 10px;
     background-color: #f8f9fa;
@@ -156,16 +186,22 @@ header h1 {
     margin-top: 20px;
     width: 100%;
     box-sizing: border-box;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
+}
+
+.bingo-board-container:hover {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
 .board-ball {
-    width: 100%; /* Make ball responsive within grid cell */
+    width: 100%;
     padding-bottom: 100%; /* Maintain aspect ratio 1:1 */
     position: relative; /* For centering content */
     border-radius: 50%;
     background-color: #d0d0d0; /* Initial greyed-out color */
     color: #555;
-    font-size: 0.9em; /* Adjusted for smaller balls */
+    font-size: 0.8em; /* Adjusted for smaller balls */
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -199,6 +235,10 @@ header h1 {
 .ball-color-61-75 { background-color: #fd7e14; } /* Orange */
 .ball-color-76-90 { background-color: #6f42c1; } /* Indigo */
 
+.board-ball .call-order {
+    display: none; /* Hidden by default in the main board */
+}
+
 /* =================================== */
 /* == Responsive Design Adjustments == */
 /* =================================== */
@@ -226,14 +266,8 @@ header h1 {
         padding: 10px; /* Reduce body padding */
     }
 
-    .bingo-board-container {
-        /* 9 columns for slightly better fit on portrait phones */
-        grid-template-columns: repeat(9, 1fr);
-        gap: 4px;
-    }
-
     .board-ball {
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
 
     header h1 {
@@ -255,16 +289,16 @@ header h1 {
     }
 
     .controls input[type="number"] {
-        width: 70px;
+        width: 60px;
         padding: 10px;
         font-size: 1.1em;
         text-align: center;
     }
 
     .ball { /* Main display ball */
-        width: 100px;
-        height: 100px;
-        font-size: 2.5em;
+        width: 90px;
+        height: 90px;
+        font-size: 2.2em;
     }
 }
 
@@ -294,7 +328,7 @@ header h1 {
     }
 
     .board-ball {
-        font-size: 0.75em;
+        font-size: 0.6em;
     }
 }
 
@@ -315,18 +349,19 @@ header h1 {
     width: 100%;
 }
 
-.settings-button {
+button.settings-button {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 5px;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    color: #555;
+    padding: 0 10px 0 0; /* Adjust padding */
+    margin: 0;
+    color: #555; /* Explicitly set a visible color */
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle; /* Align with text */
 }
 
-.settings-button:hover {
+button.settings-button:hover {
     color: #000;
 }
 
@@ -398,106 +433,75 @@ header h1 {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* =================================== */
-/* == Responsive Design Adjustments == */
-/* =================================== */
-
-/* For Tablets and larger phones (e.g., landscape) */
-@media (max-width: 768px) {
-    .bingo-caller-app {
-        padding: 15px;
-    }
-
-    header h1 {
-        font-size: 2.5em;
-    }
-
-    .settings-button {
-        top: 15px;
-        right: 15px;
-    }
-
-    .ball { /* Main display ball */
-        width: 110px;
-        height: 110px;
-    }
+.expanded-board-content {
+    width: 95%;
+    height: 95%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* For most mobile phones in portrait mode */
-@media (max-width: 600px) {
-    body {
-        padding: 10px; /* Reduce body padding */
-    }
-
-    .bingo-board-container {
-        /* 9 columns for slightly better fit on portrait phones */
-        grid-template-columns: repeat(9, 1fr);
-        gap: 4px;
-    }
-
-    .board-ball {
-        font-size: 0.8em;
-    }
-
-    header h1 {
-        font-size: 2.2em;
-        letter-spacing: 1.5px;
-    }
-
-    .controls {
-        flex-direction: row; /* Keep controls in a row */
-        align-items: center; /* Vertically center items in the row */
-        justify-content: center; /* Center the items horizontally */
-        gap: 12px;
-        flex-wrap: wrap; /* Allow wrapping for controls */
-    }
-
-    .controls button {
-        width: auto; /* Allow buttons to size to their content */
-        padding: 12px 20px; /* Adjust padding */
-    }
-
-    .controls input[type="number"] {
-        width: 70px;
-        padding: 10px;
-        font-size: 1.1em;
-        text-align: center;
-    }
-
-    .ball { /* Main display ball */
-        width: 100px;
-        height: 100px;
-        font-size: 2.5em;
-    }
+.expanded-board-content .modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-/* For smaller mobile phones */
-@media (max-width: 400px) {
-     body {
-        padding: 5px;
-    }
+.recent-calls-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.1em;
+}
 
-    .bingo-caller-app {
-        padding: 10px;
-    }
+.recent-calls-label {
+    font-weight: bold;
+    color: #333;
+}
 
-    header h1 {
-        font-size: 1.9em;
-    }
+.recent-calls-balls {
+    display: flex;
+    gap: 8px;
+}
 
-    .ball { /* Main display ball */
-        width: 90px;
-        height: 90px;
-        font-size: 2.2em;
-    }
+.recent-calls-balls .board-ball {
+    width: 40px; /* Smaller size for recent balls */
+    height: 40px;
+    font-size: 1em;
+    padding-bottom: 0; /* Override aspect ratio hack */
+    flex-shrink: 0; /* Prevent balls from shrinking */
+}
 
-     .bingo-board-container {
-        /* 8 columns for very narrow screens */
-        grid-template-columns: repeat(8, 1fr);
-    }
+/* Styles for the expanded board inside the modal */
+.bingo-board-container.expanded {
+    cursor: default;
+    flex-grow: 1; /* Allow grid to fill available space */
+}
 
-    .board-ball {
-        font-size: 0.75em;
-    }
+.bingo-board-container.expanded:hover {
+    box-shadow: none;
+}
+
+.bingo-board-container.expanded .board-ball {
+    font-size: 1.2em; /* Larger font for expanded view */
+}
+
+.bingo-board-container.expanded .board-ball .call-order {
+    display: block;
+    position: absolute;
+    bottom: -2px;
+    right: 2px;
+    font-size: 0.5em;
+    font-weight: normal;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
 }
 

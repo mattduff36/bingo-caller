@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsButton = document.getElementById('settingsButton');
     const closeModalButton = document.getElementById('closeModalButton');
     const settingsModal = document.getElementById('settingsModal');
+    const expandedBoardModal = document.getElementById('expandedBoardModal');
+    const closeExpandedBoardButton = document.getElementById('closeExpandedBoardButton');
 
     let numbersPool = []; // Numbers 1-90 available to be called
     let calledNumbers = []; // Numbers that have been called in the current game
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPaused = true; // Game state tracker
     let currentInterval = 5000; // Default 5 seconds
     let voices = []; // To store available speech synthesis voices
+    let previousNumber = null; // To store the previously called number
 
     function initializeNumbers() {
         numbersPool = [];
@@ -26,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             numbersPool.push(i);
         }
         calledNumbers = [];
+        previousNumber = null; // Reset on initialization
     }
 
     function getBallColorClass(number) {
@@ -77,13 +81,25 @@ document.addEventListener('DOMContentLoaded', () => {
             voiceSelector.appendChild(option);
             return;
         }
+
+        let defaultVoiceIndex = -1; // To store the index of the default voice
     
-        curatedVoices.forEach(({ voice, index }) => {
+        curatedVoices.forEach(({ voice, index }, i) => {
             const option = document.createElement('option');
             option.textContent = `${voice.name} (${voice.lang})`;
             option.setAttribute('data-voice-index', index);
             voiceSelector.appendChild(option);
+
+            // Check if this voice is the desired default
+            if (voice.name.includes('Daniel') && voice.lang === 'en-GB') {
+                defaultVoiceIndex = i;
+            }
         });
+
+        // Set the default selection
+        if (defaultVoiceIndex !== -1) {
+            voiceSelector.selectedIndex = defaultVoiceIndex;
+        }
     }
 
     function displayCalledNumber(number) {
@@ -110,7 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
             explanationText = nicknameInfo.explanation;
         }
         nicknameExplanationDisplay.textContent = explanationText;
-        lastCalledMessage.textContent = `Last called: ${number}`; // Keep this for quick visual
+        
+        if (previousNumber) {
+            lastCalledMessage.textContent = `Previous number: ${previousNumber}`;
+        } else {
+            lastCalledMessage.textContent = 'First number called!';
+        }
 
         speakNumberWithNickname(number);
         updateBoardBall(number); // Update the corresponding ball on the grid
@@ -155,18 +176,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function createBingoBoard() {
-        bingoBoardContainer.innerHTML = ''; // Clear previous board
+    function createBingoBoard(container, isExpanded = false) {
+        container.innerHTML = ''; // Clear previous board
+
         for (let i = 1; i <= 90; i++) {
             const ball = document.createElement('div');
             ball.classList.add('board-ball');
-            ball.id = `board-ball-${i}`;
+            ball.id = `${isExpanded ? 'expanded-' : ''}board-ball-${i}`;
 
             const numberSpan = document.createElement('span');
             numberSpan.textContent = i;
             ball.appendChild(numberSpan);
 
-            bingoBoardContainer.appendChild(ball);
+            // If the board is the expanded one, add a placeholder for the call order
+            if (isExpanded) {
+                const callOrderSpan = document.createElement('span');
+                callOrderSpan.classList.add('call-order');
+                ball.appendChild(callOrderSpan);
+            }
+            
+            container.appendChild(ball);
+        }
+    }
+
+    function updateExpandedBoard() {
+        const expandedContainer = document.getElementById('expandedBingoBoard');
+        createBingoBoard(expandedContainer, true); // Re-create the structure
+
+        calledNumbers.forEach((number, index) => {
+            const boardBall = document.getElementById(`expanded-board-ball-${number}`);
+            if (boardBall) {
+                boardBall.classList.add('called');
+                const colorClass = getBallColorClass(number);
+                if (colorClass) {
+                    boardBall.classList.add(colorClass);
+                }
+                const callOrderSpan = boardBall.querySelector('.call-order');
+                if(callOrderSpan) {
+                    callOrderSpan.textContent = index + 1;
+                }
+            }
+        });
+        
+        // Update recent calls
+        const recentCallsBallsContainer = document.querySelector('.recent-calls-balls');
+        const recentCallsContainer = document.getElementById('recentCallsContainer');
+        recentCallsBallsContainer.innerHTML = ''; // Clear previous balls
+        const recent = calledNumbers.slice(-5).reverse();
+        
+        if (recent.length > 0) {
+            recentCallsContainer.style.display = 'flex'; // Make sure the container is visible
+            recent.forEach(number => {
+                const ball = document.createElement('div');
+                ball.classList.add('board-ball', 'called');
+                
+                const colorClass = getBallColorClass(number);
+                if (colorClass) {
+                    ball.classList.add(colorClass);
+                }
+                
+                const numberSpan = document.createElement('span');
+                numberSpan.textContent = number;
+                ball.appendChild(numberSpan);
+
+                recentCallsBallsContainer.appendChild(ball);
+            });
+        } else {
+             recentCallsContainer.style.display = 'none'; // Hide if no numbers are called
         }
     }
 
@@ -175,6 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
             lastCalledMessage.textContent = 'All numbers called!';
             stopCalling();
             return;
+        }
+
+        const currentNumber = calledNumbers.length > 0 ? calledNumbers[calledNumbers.length - 1] : null;
+        if (currentNumber) {
+            previousNumber = currentNumber;
         }
 
         const randomIndex = Math.floor(Math.random() * numbersPool.length);
@@ -228,14 +309,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetGame() {
         stopCalling();
-        initializeNumbers(); // Resets numbersPool and calledNumbers
-        createBingoBoard(); // Re-creates the board (all balls uncalled)
-        ballNumberDisplay.textContent = '--';
+        initializeNumbers();
+        isPaused = true;
+        previousNumber = null; // Also reset previous number here
+
+        // Reset UI elements
+        ballNumberDisplay.textContent = '...';
         ballDisplay.className = 'ball'; // Reset main display ball color
         lastCalledMessage.textContent = 'Game reset. Click the ball to start.';
         nicknameExplanationDisplay.textContent = ''; // Clear explanation on reset
         intervalInput.disabled = false;
-        isPaused = true; // Set state to paused
         // If speech is ongoing, stop it
         if ('speechSynthesis' in window && speechSynthesis.speaking) {
             speechSynthesis.cancel();
@@ -267,6 +350,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Expanded board modal listeners
+    bingoBoardContainer.addEventListener('click', () => {
+        updateExpandedBoard();
+        expandedBoardModal.classList.add('visible');
+    });
+
+    closeExpandedBoardButton.addEventListener('click', () => {
+        expandedBoardModal.classList.remove('visible');
+    });
+
+    expandedBoardModal.addEventListener('click', (e) => {
+        if (e.target === expandedBoardModal) {
+            expandedBoardModal.classList.remove('visible');
+        }
+    });
+
     // Initial Setup
     // Voices are loaded asynchronously. We need to listen for when they are ready.
     populateVoiceList();
@@ -274,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
-    createBingoBoard(); // Create the initial 90-ball grid
+    createBingoBoard(bingoBoardContainer); // Create the initial 90-ball grid
     initializeNumbers(); // Prepare numbers 1-90 for calling
     lastCalledMessage.textContent = 'Welcome! Click the ball to begin.';
 
