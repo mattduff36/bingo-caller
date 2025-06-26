@@ -295,22 +295,27 @@ document.addEventListener('DOMContentLoaded', () => {
         expandedBoardModal.style.display = 'flex';
     });
 
-    window.addEventListener('click', e => {
-        // Close Settings Modal if click is outside
-        if (settingsModal.style.display === 'flex' && !e.target.closest('#settingsModal .modal-content') && !e.target.closest('#settingsButton')) {
-            settingsModal.style.display = 'none';
-        }
+    // --- Modal Closing Logic ---
+    function setupModal(modalId, modalContentClass) {
+        const modal = document.getElementById(modalId);
+        const modalContent = modal.querySelector(modalContentClass);
 
-        // Close Expanded Board Modal if click is outside
-        if (expandedBoardModal.style.display === 'flex' && !e.target.closest('#expandedBoardModal .modal-content') && !e.target.closest('#bingoBoardContainer')) {
-            expandedBoardModal.style.display = 'none';
-        }
+        if (!modal || !modalContent) return;
 
-        // Close Install Modal if click is outside content and not on the trigger button
-        if (installModal.style.display === 'flex' && !e.target.closest('#installModal .modal-content') && !e.target.closest('#addToHomeScreenButton')) {
-            hideInstallPrompt();
-        }
-    });
+        // Close modal when background is clicked
+        modal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Prevent clicks on modal content from closing the modal
+        modalContent.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    setupModal('settingsModal', '.modal-content');
+    setupModal('expandedBoardModal', '.modal-content');
+    setupModal('installModal', '.modal-content');
 
     // PWA Listeners
     window.addEventListener('beforeinstallprompt', e => {
