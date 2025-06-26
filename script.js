@@ -1,17 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById('startButton');
-    const stopButton = document.getElementById('stopButton');
+    const resetButton = document.getElementById('resetButton');
     const intervalInput = document.getElementById('intervalInput');
+    const voiceSelector = document.getElementById('voiceSelector');
     const ballDisplay = document.getElementById('ballDisplay'); // Main large ball
     const ballNumberDisplay = document.getElementById('ballNumber'); // Number in main large ball
     const lastCalledMessage = document.getElementById('lastCalledMessage');
     const nicknameExplanationDisplay = document.getElementById('nicknameExplanationDisplay'); // For nickname explanation
     const bingoBoardContainer = document.getElementById('bingoBoardContainer'); // Grid for 90 balls
 
+    // Modal elements
+    const settingsButton = document.getElementById('settingsButton');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const settingsModal = document.getElementById('settingsModal');
+
     let numbersPool = []; // Numbers 1-90 available to be called
     let calledNumbers = []; // Numbers that have been called in the current game
     let callIntervalId = null;
+    let isPaused = true; // Game state tracker
     let currentInterval = 5000; // Default 5 seconds
+    let voices = []; // To store available speech synthesis voices
 
     function initializeNumbers() {
         numbersPool = [];
@@ -29,6 +36,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (number >= 61 && number <= 75) return 'ball-color-61-75';
         if (number >= 76 && number <= 90) return 'ball-color-76-90';
         return ''; // Default
+    }
+
+    function populateVoiceList() {
+        voices = speechSynthesis.getVoices();
+        voiceSelector.innerHTML = ''; // Clear any previous options
+    
+        if (voices.length === 0) {
+            const option = document.createElement('option');
+            option.textContent = 'No voices available';
+            voiceSelector.appendChild(option);
+            return;
+        }
+        
+        const preferredVoiceKeywords = ['Google', 'Microsoft', 'Natural', 'Aria', 'Zira', 'David', 'Mark', 'Guy', 'Jenny'];
+
+        // Filter for English voices, separating preferred from others
+        const englishVoices = voices
+            .map((voice, index) => ({ voice, index }))
+            .filter(({ voice }) => voice.lang.startsWith('en-'));
+
+        const preferredVoices = [];
+        const otherVoices = [];
+
+        englishVoices.forEach(item => {
+            const isPreferred = preferredVoiceKeywords.some(keyword => item.voice.name.includes(keyword));
+            if (isPreferred) {
+                preferredVoices.push(item);
+            } else {
+                otherVoices.push(item);
+            }
+        });
+
+        // Create a final list, prioritizing preferred voices, and limit the count
+        let curatedVoices = [...preferredVoices, ...otherVoices].slice(0, 8);
+    
+        if (curatedVoices.length === 0) {
+            const option = document.createElement('option');
+            option.textContent = 'No English voices found';
+            voiceSelector.appendChild(option);
+            return;
+        }
+    
+        curatedVoices.forEach(({ voice, index }) => {
+            const option = document.createElement('option');
+            option.textContent = `${voice.name} (${voice.lang})`;
+            option.setAttribute('data-voice-index', index);
+            voiceSelector.appendChild(option);
+        });
     }
 
     function displayCalledNumber(number) {
@@ -75,15 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            // utterance.lang = 'en-GB'; // Example: British English
-            // Add a slight pause manually if needed, though sentence structure might suffice
-            // For more precise pauses, one might need to queue utterances, but it adds complexity.
-            // For example:
-            // const part1 = new SpeechSynthesisUtterance(nicknameInfo.nickname);
-            // const part2 = new SpeechSynthesisUtterance(`number ${number}`);
-            // speechSynthesis.speak(part1);
-            // part1.onend = () => { speechSynthesis.speak(part2); };
-            // However, for now, a single string is simpler.
+            
+            const selectedOption = voiceSelector.selectedOptions[0];
+            const voiceIndex = selectedOption.getAttribute('data-voice-index');
+            if (voiceIndex) {
+                utterance.voice = voices[voiceIndex];
+            }
 
             speechSynthesis.speak(utterance);
         } else {
@@ -132,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startCalling() {
-        if (callIntervalId !== null) return; // Already running
+        isPaused = false;
+        lastCalledMessage.textContent = 'Calling...';
 
         currentInterval = parseInt(intervalInput.value, 10) * 1000;
         if (isNaN(currentInterval) || currentInterval < 1000) {
@@ -140,30 +193,37 @@ document.addEventListener('DOMContentLoaded', () => {
             intervalInput.value = currentInterval / 1000;
         }
 
-        if (numbersPool.length === 0 || calledNumbers.length === 90) {
-            resetGame(); // Reset if game was finished
-        }
+        // Immediately call the next number when resuming or starting.
+        callNextNumber();
 
-        lastCalledMessage.textContent = 'Calling started...';
-        callNextNumber(); // Call the first number immediately
+        // Then set the interval for subsequent calls.
         callIntervalId = setInterval(callNextNumber, currentInterval);
-
-        startButton.disabled = true;
-        stopButton.disabled = false;
         intervalInput.disabled = true;
     }
 
     function stopCalling() {
+        isPaused = true;
         if (callIntervalId !== null) {
             clearInterval(callIntervalId);
             callIntervalId = null;
         }
         if (numbersPool.length > 0) {
-            lastCalledMessage.textContent = 'Calling paused. Press Start to resume.';
+            lastCalledMessage.textContent = 'Calling paused.';
         }
-        startButton.disabled = false;
-        stopButton.disabled = true;
         intervalInput.disabled = false;
+    }
+    
+    function toggleCalling() {
+        if (numbersPool.length === 0) {
+            lastCalledMessage.textContent = 'All numbers called! Reset to play again.';
+            return; // Don't do anything if game is over
+        }
+        
+        if (isPaused) {
+            startCalling();
+        } else {
+            stopCalling();
+        }
     }
 
     function resetGame() {
@@ -172,11 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
         createBingoBoard(); // Re-creates the board (all balls uncalled)
         ballNumberDisplay.textContent = '--';
         ballDisplay.className = 'ball'; // Reset main display ball color
-        lastCalledMessage.textContent = 'Game reset. Waiting to start...';
+        lastCalledMessage.textContent = 'Game reset. Click the ball to start.';
         nicknameExplanationDisplay.textContent = ''; // Clear explanation on reset
-        startButton.disabled = false;
-        stopButton.disabled = true;
         intervalInput.disabled = false;
+        isPaused = true; // Set state to paused
         // If speech is ongoing, stop it
         if ('speechSynthesis' in window && speechSynthesis.speaking) {
             speechSynthesis.cancel();
@@ -184,14 +243,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event Listeners
-    startButton.addEventListener('click', startCalling);
-    stopButton.addEventListener('click', stopCalling);
+    ballDisplay.addEventListener('click', toggleCalling);
+    ballDisplay.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            toggleCalling();
+        }
+    });
+    resetButton.addEventListener('click', resetGame);
+
+    // Modal event listeners
+    settingsButton.addEventListener('click', () => {
+        settingsModal.classList.add('visible');
+    });
+
+    closeModalButton.addEventListener('click', () => {
+        settingsModal.classList.remove('visible');
+    });
+
+    // Close modal if user clicks outside of the modal content
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            settingsModal.classList.remove('visible');
+        }
+    });
 
     // Initial Setup
+    // Voices are loaded asynchronously. We need to listen for when they are ready.
+    populateVoiceList();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoiceList;
+    }
+
     createBingoBoard(); // Create the initial 90-ball grid
     initializeNumbers(); // Prepare numbers 1-90 for calling
-    stopButton.disabled = true; // Initially stop is disabled
-    lastCalledMessage.textContent = 'Welcome! Press Start to begin.';
+    lastCalledMessage.textContent = 'Welcome! Click the ball to begin.';
 
     // Register Service Worker for PWA capabilities
     if ('serviceWorker' in navigator) {
