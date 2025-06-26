@@ -296,9 +296,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('click', e => {
-        if (e.target === settingsModal) settingsModal.style.display = 'none';
-        if (e.target === expandedBoardModal) expandedBoardModal.style.display = 'none';
-        if (e.target === installModal) hideInstallPrompt();
+        // Close Settings Modal if click is outside
+        if (settingsModal.style.display === 'flex' && !e.target.closest('#settingsModal .modal-content') && !e.target.closest('#settingsButton')) {
+            settingsModal.style.display = 'none';
+        }
+
+        // Close Expanded Board Modal if click is outside
+        if (expandedBoardModal.style.display === 'flex' && !e.target.closest('#expandedBoardModal .modal-content') && !e.target.closest('#bingoBoardContainer')) {
+            expandedBoardModal.style.display = 'none';
+        }
+
+        // Close Install Modal if click is outside content and not on the trigger button
+        if (installModal.style.display === 'flex' && !e.target.closest('#installModal .modal-content') && !e.target.closest('#addToHomeScreenButton')) {
+            hideInstallPrompt();
+        }
     });
 
     // PWA Listeners
