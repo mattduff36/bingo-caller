@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let voices = []; // To store available speech synthesis voices
     let previousNumber = null; // To store the previously called number
 
+    // --- Page Load Animation Trigger ---
+    window.onload = () => {
+        document.body.classList.add('loaded');
+    };
+
     function initializeNumbers() {
         numbersPool = [];
         for (let i = 1; i <= 90; i++) {
@@ -115,10 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Animation for the large display ball
+        ballDisplay.classList.remove('new-call-animation'); // Remove old animation class first
+        void ballDisplay.offsetWidth; // Trigger reflow
         ballDisplay.classList.add('new-call-animation');
-        setTimeout(() => {
-            ballDisplay.classList.remove('new-call-animation');
-        }, 500); // Animation duration should match CSS
 
         const nicknameInfo = bingoNicknames[number];
         let explanationText = "";
@@ -183,6 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const ball = document.createElement('div');
             ball.classList.add('board-ball');
             ball.id = `board-ball-${i}`;
+            // Stagger the animation for each ball
+            ball.style.animationDelay = `${i * 15}ms`;
 
             const numberSpan = document.createElement('span');
             numberSpan.textContent = i;

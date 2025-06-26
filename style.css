@@ -16,6 +16,10 @@ body {
     box-sizing: border-box;
 }
 
+body.loaded .bingo-caller-app {
+    opacity: 1;
+}
+
 .bingo-caller-app {
     background-color: #ffffff; /* White */
     padding: 20px; /* Adjusted padding */
@@ -27,6 +31,9 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 4vh; /* Add space at the top */
+    /* Added for animation */
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
 }
 
 header h1 {
@@ -42,6 +49,8 @@ header h1 {
     max-width: 100%;
     height: auto;
     margin-bottom: 20px;
+    transition: transform 0.3s ease-out, background-color 0.3s ease;
+    cursor: pointer; /* Make the ball look clickable */
 }
 
 .controls .icon-button {
@@ -170,15 +179,30 @@ header h1 {
 }
 
 /* Animation for newly called ball */
+@keyframes jello-horizontal {
+  11.1% { transform: scale3d(1, 1, 1); }
+  22.2% { transform: skewX(-12.5deg) skewY(-12.5deg); }
+  33.3% { transform: skewX(6.25deg) skewY(6.25deg); }
+  44.4% { transform: skewX(-3.125deg) skewY(-3.125deg); }
+  55.5% { transform: skewX(1.5625deg) skewY(1.5625deg); }
+  66.6% { transform: skewX(-0.78125deg) skewY(-0.78125deg); }
+  77.7% { transform: skewX(0.390625deg) skewY(0.390625deg); }
+  88.8% { transform: skewX(-0.1953125deg) skewY(-0.1953125deg); }
+  100% { transform: scale3d(1, 1, 1); }
+}
+
 .ball.new-call-animation {
-    transform: scale(1.15);
-    background-color: #ffc107; /* Yellow for emphasis */
+    animation: jello-horizontal 0.9s both;
 }
 
 #lastCalledMessage {
     font-size: 1.2em;
     color: #555;
     min-height: 1.5em; /* Prevent layout shift */
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .nickname-explanation {
@@ -240,9 +264,15 @@ header h1 {
     align-items: center;
 }
 
+@keyframes flip-in {
+    0% { transform: rotateY(90deg) scale(0.9); opacity: 0; }
+    100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+}
+
 .board-ball.called {
     color: white; /* Default text color for called balls */
     transform: scale(1.05); /* Slight pop effect */
+    animation: flip-in 0.5s forwards;
 }
 
 /* Different colors for ranges of bingo balls, for a bit more visual flair */
