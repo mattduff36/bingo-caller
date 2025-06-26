@@ -528,3 +528,25 @@ button.settings-button:hover {
     width: 85%; /* Reduce width to create side gaps */
 }
 
+.controls .input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding-left: 10px;
+    background-color: white;
+}
+
+.controls .input-group label {
+    margin-right: 5px;
+    color: #555;
+}
+
+.controls .input-group select {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 8px 5px; /* Adjust padding */
+    font-size: 1em;
+}
+
