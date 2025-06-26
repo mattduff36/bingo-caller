@@ -663,6 +663,7 @@ button.settings-button:hover {
 
     #bingoBoardContainer {
         height: 100%; /* Make board container fill the panel */
+        grid-template-columns: repeat(15, 1fr); /* 15 columns for desktop view */
         gap: 8px;
     }
 
