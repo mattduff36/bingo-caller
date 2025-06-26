@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const nicknameExplanationDisplay = document.getElementById('nicknameExplanationDisplay');
     const bingoBoardContainer = document.getElementById('bingoBoardContainer');
     const settingsButton = document.getElementById('settingsButton');
-    const closeModalButton = document.getElementById('closeModalButton');
     const settingsModal = document.getElementById('settingsModal');
     const expandedBoardModal = document.getElementById('expandedBoardModal');
     const addToHomeScreenButton = document.getElementById('addToHomeScreenButton');
@@ -290,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     settingsButton.addEventListener('click', () => settingsModal.style.display = 'flex');
-    closeModalButton.addEventListener('click', () => settingsModal.style.display = 'none');
     bingoBoardContainer.addEventListener('click', () => {
         // Just show the modal, content is updated in real-time
         updateExpandedBoard();
@@ -317,13 +315,18 @@ document.addEventListener('DOMContentLoaded', () => {
         showInstallPrompt();
     });
 
-    nativeInstallButton.addEventListener('click', async () => {
-        hideInstallPrompt();
-        if (deferredPrompt) {
+    nativeInstallButton.addEventListener('click', () => {
+        if(deferredPrompt) {
             deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            addToHomeScreenButton.style.display = 'none';
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+                deferredPrompt = null;
+                hideInstallPrompt();
+            });
         }
     });
 
