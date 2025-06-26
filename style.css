@@ -476,7 +476,6 @@ button.settings-button:hover {
 .modal-footer {
     flex-shrink: 0;
     padding-top: 15px;
-    border-top: 1px solid #eee;
 }
 
 .recent-calls-container {
@@ -492,10 +491,6 @@ button.settings-button:hover {
 .recent-calls-label {
     font-weight: bold;
     color: #333;
-    height: 40px;
-    font-size: 1em;
-    padding-bottom: 0; /* Override aspect ratio hack */
-    flex-shrink: 0; /* Prevent balls from shrinking */
 }
 
 .recent-calls-balls {
