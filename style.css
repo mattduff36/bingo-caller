@@ -129,6 +129,14 @@ header h1 {
     color: #333;
 }
 
+.controls select {
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white; /* Explicit background */
+}
+
 .controls input[type="number"] {
     padding: 8px;
     font-size: 1em;

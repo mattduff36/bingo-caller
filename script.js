@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('resetButton');
-    const intervalInput = document.getElementById('intervalInput');
+    const intervalSelector = document.getElementById('intervalSelector');
     const voiceSelector = document.getElementById('voiceSelector');
     const ballDisplay = document.getElementById('ballDisplay'); // Main large ball
     const ballNumberDisplay = document.getElementById('ballNumber'); // Number in main large ball
@@ -268,10 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
         isPaused = false;
         lastCalledMessage.textContent = 'Calling...';
 
-        currentInterval = parseInt(intervalInput.value, 10) * 1000;
-        if (isNaN(currentInterval) || currentInterval < 1000) {
-            currentInterval = 5000; // Default to 5s if input is invalid
-            intervalInput.value = currentInterval / 1000;
+        currentInterval = parseInt(intervalSelector.value, 10) * 1000;
+        if (isNaN(currentInterval) || currentInterval < 2000) {
+            currentInterval = 5000; // Default to 5s if value is invalid
+            intervalSelector.value = "5";
         }
 
         // Immediately call the next number when resuming or starting.
@@ -279,19 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Then set the interval for subsequent calls.
         callIntervalId = setInterval(callNextNumber, currentInterval);
-        intervalInput.disabled = true;
+        intervalSelector.disabled = true;
     }
 
     function stopCalling() {
-        isPaused = true;
-        if (callIntervalId !== null) {
+        if (callIntervalId) {
             clearInterval(callIntervalId);
             callIntervalId = null;
         }
-        if (numbersPool.length > 0) {
-            lastCalledMessage.textContent = 'Calling paused.';
-        }
-        intervalInput.disabled = false;
+        isPaused = true;
+        lastCalledMessage.textContent = 'Paused. Click the ball to resume.';
+        intervalSelector.disabled = false;
     }
     
     function toggleCalling() {
@@ -302,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isPaused) {
             startCalling();
+            // Disable interval changing while calling is active
+            intervalSelector.disabled = true;
         } else {
             stopCalling();
         }
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ballDisplay.className = 'ball'; // Reset main display ball color
         lastCalledMessage.textContent = 'Game reset. Click the ball to start.';
         nicknameExplanationDisplay.textContent = ''; // Clear explanation on reset
-        intervalInput.disabled = false;
+        intervalSelector.disabled = false;
         // If speech is ongoing, stop it
         if ('speechSynthesis' in window && speechSynthesis.speaking) {
             speechSynthesis.cancel();
