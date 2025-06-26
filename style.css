@@ -33,6 +33,12 @@ header h1 {
     letter-spacing: 2px; /* Added letter spacing */
 }
 
+#logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
 .controls .icon-button {
     background: transparent;
     border: none;
