@@ -508,8 +508,9 @@ button.settings-button:hover {
 }
 
 .modal-footer {
-    flex-shrink: 0;
-    padding-top: 15px;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+    text-align: center;
 }
 
 .recent-calls-container {
@@ -672,5 +673,66 @@ button.settings-button:hover {
     .board-ball {
         font-size: 1.5em; /* Larger numbers on the board */
     }
+}
+
+.install-instructions {
+    list-style-position: inside;
+    text-align: left;
+    padding-left: 0;
+}
+
+.install-instructions li {
+    margin-bottom: 1rem;
+}
+
+.install-instructions .inline-icon {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    margin: 0 0.2em;
+    color: #007aff; /* Standard iOS blue */
+}
+
+.install-instructions h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.install-instructions ol {
+    text-align: left;
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.install-instructions li {
+    margin-bottom: 0.75rem;
+}
+
+.install-note {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.button-primary {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1.5rem;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button-primary:hover {
+    background-color: #005ecb;
 }
 
