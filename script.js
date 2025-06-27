@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Element References ---
     const resetButton = document.getElementById('resetButton');
-    const intervalSelector = document.getElementById('intervalSelector');
     const voiceSelector = document.getElementById('voiceSelector');
     const ballDisplay = document.getElementById('ballDisplay');
     const ballNumberDisplay = document.getElementById('ballNumber');
@@ -21,12 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const iosOtherInstructions = document.getElementById('ios-other-instructions');
     const nativeInstallButton = document.getElementById('native-install-button');
 
+    // Speed control buttons
+    const speedButtons = [
+        document.getElementById('speed-fast'),
+        document.getElementById('speed-medium'),
+        document.getElementById('speed-slow')
+    ];
+
     // --- State Variables ---
     let numbersPool = [];
     let calledNumbers = [];
     let callIntervalId = null;
     let isPaused = true;
-    let currentInterval = 4000; // Default interval to 4 seconds
+    let currentInterval = 5000; // Default interval to 5 seconds (Medium)
     let voices = [];
     let previousNumber = null;
     let deferredPrompt;
@@ -280,12 +286,25 @@ document.addEventListener('DOMContentLoaded', () => {
     ballDisplay.addEventListener('click', toggleCalling);
     ballDisplay.addEventListener('keydown', e => (e.key === ' ' || e.key === 'Enter') && toggleCalling());
     resetButton.addEventListener('click', resetGame);
-    intervalSelector.addEventListener('change', e => {
-        currentInterval = parseInt(e.target.value, 10) * 1000;
-        if (!isPaused) {
-            stopCalling();
-            startCalling();
-        }
+    
+    speedButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            speedButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to the clicked button
+            button.classList.add('active');
+            
+            // Update the interval
+            const newInterval = parseInt(button.dataset.speed, 10);
+            if (currentInterval !== newInterval) {
+                currentInterval = newInterval;
+                // If the game is running, restart the interval
+                if (!isPaused) {
+                    stopCalling();
+                    startCalling();
+                }
+            }
+        });
     });
 
     settingsButton.addEventListener('click', () => settingsModal.style.display = 'flex');
