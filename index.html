@@ -4,151 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Bingo Caller Deluxe</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts for all themes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Nunito:wght@400;600&family=Fredoka+One&family=Open+Sans:wght@400;600&family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Generic styles for called balls, shared across themes */
+        .board-ball.called, .recent-ball.called {
+            color: white;
+            font-weight: bold;
+        }
+        .ball-color-1-15 { background-color: #2196F3; } /* Blue */
+        .ball-color-16-30 { background-color: #F44336; } /* Red */
+        .ball-color-31-45 { background-color: #4CAF50; } /* Green */
+        .ball-color-46-60 { background-color: #FFC107; color: #333; } /* Yellow */
+        .ball-color-61-75 { background-color: #FF9800; } /* Orange */
+        .ball-color-76-90 { background-color: #9C27B0; } /* Purple */
+
+        .board-ball {
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px; /* Make it a circle */
+            aspect-ratio: 1 / 1;   /* Ensure it's a perfect circle */
+        }
+
+        /* Text glow effect for Cosmic theme */
+        .text-glow-pink { text-shadow: 0 0 5px #ff6ac1, 0 0 10px #ff6ac1, 0 0 15px #ff6ac1, 0 0 20px #f09; }
+        .text-glow-orange { text-shadow: 0 0 5px #ff8c00, 0 0 10px #ff8c00, 0 0 20px #ff8c00; }
+        .text-glow-cyan { text-shadow: 0 0 5px #22d3ee, 0 0 10px #22d3ee, 0 0 15px #22d3ee; }
+        .text-glow-bright-orange { text-shadow: 0 0 5px #fdba74, 0 0 10px #fdba74, 0 0 15px #fdba74; }
+        .text-glow-purple-subtle { text-shadow: 0 0 2px #c084fc, 0 0 4px #c084fc, 0 0 8px #c084fc; }
+    </style>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-
-    <!-- Apple PWA Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BingoCall">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    <!-- You can add more apple-touch-icon sizes if needed, e.g., for older devices or iPads -->
-    <!-- <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png"> -->
-    <!-- <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png"> -->
-
-    <!-- Optional: Theme color for Safari address bar (though less relevant in standalone) -->
-    <meta name="theme-color" content="#ff4500">
-
+    <meta name="theme-color" content="#F59E0B">
 </head>
-<body>
-    <div class="bingo-caller-app">
-        <header>
-            <img src="/Bingo_Logo.png" alt="Bingo Caller Deluxe Logo" id="logo">
+<body class="transition-colors duration-500">
+    <div id="app-container" class="bingo-caller-app container mx-auto p-4 max-w-7xl">
+        <header class="flex flex-col items-center justify-center py-4 mb-6">
+            <h1 id="logo-text" class="text-5xl sm:text-6xl font-bold tracking-wider" style="font-family: 'Fredoka One', cursive;">BINGO CALLER</h1>
         </header>
 
-        <div class="main-content-area">
-            <div class="left-panel">
-                <div class="controls">
-                    <button id="settingsButton" class="icon-button" aria-label="Open Settings">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.2,5.25C8.61,5.49,8.08,5.81,7.58,6.19L5.19,5.23C4.97,5.16,4.72,5.23,4.6,5.45L2.68,8.77 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.77,11.36,4.75,11.68,4.75,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.44 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.36-2.44c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                        </svg>
+        <div class="main-content-area grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="left-panel" class="left-panel md:col-span-1">
+                <div id="controls-container" class="controls flex justify-around items-center space-x-2 p-3 mb-8 rounded-2xl shadow-md border-2">
+                    <button id="settingsButton" class="icon-button p-2 rounded-full" aria-label="Open Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.2,5.25C8.61,5.49,8.08,5.81,7.58,6.19L5.19,5.23C4.97,5.16,4.72,5.23,4.6,5.45L2.68,8.77 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.77,11.36,4.75,11.68,4.75,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.44 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.36-2.44c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
                     </button>
-                    <div class="speed-controls">
-                        <button id="speed-fast" data-speed="3000" class="speed-button">Fast</button>
-                        <button id="speed-medium" data-speed="5000" class="speed-button active">Medium</button>
-                        <button id="speed-slow" data-speed="8000" class="speed-button">Slow</button>
+                    <div id="speed-controls-container" class="speed-controls flex-grow flex justify-center space-x-1 p-1 rounded-full">
+                        <button id="speed-fast" data-speed="3000" class="speed-button px-4 py-2 rounded-full text-sm font-semibold">Fast</button>
+                        <button id="speed-medium" data-speed="5000" class="speed-button px-4 py-2 rounded-full text-sm font-semibold active">Medium</button>
+                        <button id="speed-slow" data-speed="8000" class="speed-button px-4 py-2 rounded-full text-sm font-semibold">Slow</button>
                     </div>
-                    <button id="resetButton" class="icon-button" aria-label="Reset Game">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                        </svg>
-                    </button>
-                    <button id="addToHomeScreenButton" class="icon-button" style="display: none;" aria-label="Add to Home Screen">
-                        <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                            <g><rect fill="none" height="24" width="24"/></g><g><path d="M20,2H4C2.9,2,2,2.9,2,4v16c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z M20,18H4V4h16V18z M13,12l-2,3h4 L13,12z M11,9.5C11,8.67,11.67,8,12.5,8S14,8.67,14,9.5S13.33,11,12.5,11S11,10.33,11,9.5z"/></g>
-                        </svg>
+                    <button id="resetButton" class="icon-button p-2 rounded-full" aria-label="Reset Game">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
                     </button>
                 </div>
 
-                <div class="called-ball-display">
-                    <div id="ballDisplay" class="ball" tabindex="0" aria-label="Start or Pause Bingo Calling">
-                        <span id="ballNumber">--</span>
+                <div id="called-ball-display-container" class="called-ball-display text-center flex flex-col items-center justify-center h-full p-6 rounded-2xl shadow-md border-2">
+                    <div id="ballDisplay" class="ball w-36 h-36 sm:w-48 sm:h-48 rounded-full flex items-center justify-center cursor-pointer shadow-xl border-4" tabindex="0" aria-label="Start or Pause Bingo Calling">
+                        <span id="ballNumber" class="text-6xl sm:text-7xl">--</span>
                     </div>
-                    <p id="lastCalledMessage">Waiting to start...</p>
-                    <div id="nicknameExplanationDisplay" class="nickname-explanation">
-                        <!-- Nickname explanation will appear here -->
-                    </div>
+                    <p id="lastCalledMessage" class="font-semibold mt-5 text-lg">Waiting to start...</p>
+                    <div id="nicknameExplanationDisplay" class="nickname-explanation text-2xl mt-2 h-24 sm:h-16"></div>
                 </div>
             </div>
 
-            <div class="right-panel">
-                <div id="bingoBoardContainer" class="bingo-board-container" tabindex="0" role="button" aria-label="Expand Bingo Board">
-                    <!-- 90 balls will be dynamically inserted here by JavaScript -->
+            <div id="right-panel" class="right-panel md:col-span-2 p-6 rounded-2xl shadow-md border-2">
+                 <div id="bingoBoardContainer" class="bingo-board-container grid grid-cols-10 gap-2 w-full cursor-pointer" tabindex="0" role="button" aria-label="Expand Bingo Board">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+         <button id="addToHomeScreenButton" class="hidden fixed bottom-4 right-4 text-white p-4 rounded-full shadow-lg" aria-label="Add to Home Screen">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </button>
+    </div>
+
+    <!-- Modals -->
+    <div id="expandedBoardModal" class="modal hidden fixed inset-0 flex items-center justify-center">
+        <div id="expanded-board-content" class="modal-content rounded-2xl shadow-xl p-6 w-11/12 max-w-4xl border-2">
+            <h2 id="expanded-board-title" class="text-4xl text-center mb-6">Last 5 Numbers</h2>
+            <div id="recentCallsContainer"><div class="recent-calls-balls flex justify-center gap-4"></div></div>
+        </div>
+    </div>
+    <div id="settingsModal" class="modal hidden fixed inset-0 flex items-center justify-center">
+        <div id="settings-modal-content" class="modal-content rounded-2xl shadow-xl p-6 w-11/12 max-w-md border-2">
+            <h2 id="settings-title" class="text-3xl text-center mb-6">Settings</h2>
+            <div class="voice-controls mb-6">
+                <label for="voiceSelector" class="block mb-2 font-semibold">Caller's Voice:</label>
+                <select id="voiceSelector" class="w-full p-2 border-2 rounded-lg"></select>
+            </div>
+            <div class="theme-controls">
+                <label class="block mb-2 font-semibold">Theme:</label>
+                <div id="theme-selector" class="flex justify-around gap-2">
+                    <button data-theme="sunny" class="theme-button flex-1 p-2 rounded-lg border-2" title="Sunny Day">☀️</button>
+                    <button data-theme="bubblegum" class="theme-button flex-1 p-2 rounded-lg border-2" title="Bubblegum Pop">🍬</button>
+                    <button data-theme="cosmic" class="theme-button flex-1 p-2 rounded-lg border-2" title="Cosmic Bingo">🚀</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Expanded Board Modal -->
-    <div id="expandedBoardModal" class="modal">
-        <div class="modal-content expanded-board-content">
-             <header class="modal-header">
-                <h2>Last 5 Numbers</h2>
+    <div id="installModal" class="modal hidden fixed inset-0 flex items-center justify-center">
+        <div id="install-modal-content" class="modal-content rounded-2xl shadow-xl p-6 w-11/12 max-w-md border-2">
+             <header class="flex justify-between items-center mb-4">
+                <h2 id="install-title" class="text-2xl">Install App</h2>
+                <button id="closeInstallModalButton" class="" aria-label="Close">&times;</button>
             </header>
-            <div class="modal-body">
-                <div id="recentCallsContainer" class="recent-calls-container">
-                    <div class="recent-calls-balls">
-                        <!-- Most recent calls will be rendered here as balls -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <header class="modal-header">
-                <h2>Settings</h2>
-            </header>
-            <div class="modal-body">
-                <div class="voice-controls">
-                    <label for="voiceSelector">Caller's Voice:</label>
-                    <select id="voiceSelector">
-                        <option>Loading voices...</option>
-                    </select>
-                </div>
-                <!-- Future settings will go here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Universal Install Instructions Modal -->
-    <div id="installModal" class="modal">
-        <div class="modal-content">
-            <header class="modal-header">
-                <h2>Install App</h2>
-                <button id="closeInstallModalButton" class="close-button" aria-label="Close Install Instructions">&times;</button>
-            </header>
-            <div class="modal-body">
+            <div id="install-modal-body" class="modal-body text-sm space-y-4">
                 <!-- Android Instructions -->
-                <div id="android-instructions" class="install-instructions" style="display: none;">
-                    <h3>For Android</h3>
+                <div id="android-instructions" style="display: none;">
                     <p>Add this web app to your Home Screen for a faster experience and offline access.</p>
-                    <button id="native-install-button" class="button-primary">Add to Home Screen</button>
+                    <button id="native-install-button" class="w-full px-4 py-2 mt-4 font-semibold rounded-lg">Add to Home Screen</button>
                 </div>
 
                 <!-- iOS (Safari) Instructions -->
-                <div id="ios-safari-instructions" class="install-instructions" style="display: none;">
-                    <h3>For iPhone/iPad (Safari)</h3>
+                <div id="ios-safari-instructions" style="display: none;">
                     <p>To add this app to your Home Screen:</p>
-                    <ol>
-                        <li>Tap the <strong>Share</strong> button (the box with an arrow pointing up) at the bottom of the screen.</li>
-                        <li>Scroll down the list and tap <strong>'Add to Home Screen'</strong>.</li>
-                        <li>Confirm by tapping <strong>'Add'</strong> on the next screen.</li>
+                    <ol class="list-decimal list-inside mt-2 space-y-1">
+                        <li>Tap the <strong>Share</strong> button (the box with an arrow pointing up).</li>
+                        <li>Scroll down and tap <strong>'Add to Home Screen'</strong>.</li>
+                        <li>Confirm by tapping <strong>'Add'</strong>.</li>
                     </ol>
                 </div>
 
                 <!-- iOS (Chrome/Firefox/Other) Instructions -->
-                <div id="ios-other-instructions" class="install-instructions" style="display: none;">
+                <div id="ios-other-instructions" style="display: none;">
                     <h3>For iPhone/iPad (Chrome, Firefox, etc.)</h3>
                     <p>To add this app to your Home Screen:</p>
-                    <ol>
+                    <ol class="list-decimal list-inside mt-2 space-y-1">
                         <li>Tap the <strong>Menu</strong> button (often three dots or lines) or the <strong>Share</strong> icon (a box with an arrow) in your browser's address bar.</li>
                         <li>Look for and tap the <strong>'Add to Home Screen'</strong> option.</li>
                         <li>Follow the on-screen prompts to confirm.</li>
                     </ol>
-                    <p class="install-note">Note: For the best experience, we recommend using Safari.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="bingoNicknames.js"></script>
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=4"></script> 
 </body>
 </html>
