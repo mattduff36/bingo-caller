@@ -226,6 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayCalledNumber(number) {
         ballNumberDisplay.textContent = number;
+        ballNumberDisplay.classList.remove('text-2xl', 'sm:text-3xl', 'font-bold', 'tracking-wider');
+        ballNumberDisplay.classList.add('text-6xl', 'sm:text-7xl');
         // ballDisplay classes are managed by the theme engine
         nicknameExplanationDisplay.textContent = bingoNicknames[number]?.explanation || "";
         lastCalledMessage.textContent = previousNumber ? `Previous number: ${previousNumber}` : 'First number called!';
@@ -310,6 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ballDisplay.classList.remove('in-progress');
         if (numbersPool.length > 0 && calledNumbers.length > 0) {
             lastCalledMessage.textContent = 'Calling paused.';
+            ballNumberDisplay.textContent = 'PAUSED';
+            ballNumberDisplay.classList.remove('text-6xl', 'sm:text-7xl');
+            ballNumberDisplay.classList.add('text-2xl', 'sm:text-3xl', 'font-bold', 'tracking-wider');
         }
     }
 
@@ -322,8 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeNumbers();
         createBingoBoard(bingoBoardContainer);
         updateExpandedBoard();
-        ballNumberDisplay.textContent = '--';
-        lastCalledMessage.textContent = 'Game reset. Click the ball to begin.';
+        ballNumberDisplay.textContent = 'START';
+        ballNumberDisplay.classList.remove('text-6xl', 'sm:text-7xl');
+        ballNumberDisplay.classList.add('text-2xl', 'sm:text-3xl', 'font-bold', 'tracking-wider');
+        lastCalledMessage.textContent = 'Game reset. Click to begin.';
         nicknameExplanationDisplay.textContent = '';
         applyTheme(currentTheme); // Re-apply theme to reset styles
     }
