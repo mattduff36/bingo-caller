@@ -12,6 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Nunito:wght@400;600&family=Fredoka+One&family=Open+Sans:wght@400;600&family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
+        body {
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        @media all and (display-mode: standalone) {
+            #app-container {
+                padding-top: 1.5rem; /* Fail-safe gap for PWA */
+            }
+        }
         /* Generic styles for called balls, shared across themes */
         .board-ball.called, .recent-ball.called {
             color: white;
@@ -52,13 +60,13 @@
 </head>
 <body class="transition-colors duration-500">
     <div id="app-container" class="bingo-caller-app container mx-auto p-4 max-w-7xl">
-        <header class="flex flex-col items-center justify-center py-4 mb-6">
+        <header class="flex flex-col items-center justify-center py-2 mb-4">
             <h1 id="logo-text" class="text-5xl sm:text-6xl font-bold tracking-wider" style="font-family: 'Fredoka One', cursive;">BINGO CALLER</h1>
         </header>
 
-        <div class="main-content-area grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="main-content-area grid grid-cols-1 md:grid-cols-3 gap-4">
             <div id="left-panel" class="left-panel md:col-span-1">
-                <div id="controls-container" class="controls flex justify-around items-center space-x-2 p-3 mb-8 rounded-2xl shadow-md border-2">
+                <div id="controls-container" class="controls flex justify-around items-center space-x-2 p-3 mb-4 rounded-2xl shadow-md border-2">
                     <button id="settingsButton" class="icon-button p-2 rounded-full" aria-label="Open Settings">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.2,5.25C8.61,5.49,8.08,5.81,7.58,6.19L5.19,5.23C4.97,5.16,4.72,5.23,4.6,5.45L2.68,8.77 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.77,11.36,4.75,11.68,4.75,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.44 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.36-2.44c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0.01,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
                     </button>
@@ -72,12 +80,12 @@
                     </button>
                 </div>
 
-                <div id="called-ball-display-container" class="called-ball-display text-center flex flex-col items-center justify-center h-full p-6 rounded-2xl shadow-md border-2">
+                <div id="called-ball-display-container" class="called-ball-display text-center flex flex-col items-center justify-center p-6 rounded-2xl shadow-md border-2">
                     <div id="ballDisplay" class="ball w-36 h-36 sm:w-48 sm:h-48 rounded-full flex items-center justify-center cursor-pointer shadow-xl border-4" tabindex="0" aria-label="Start or Pause Bingo Calling">
                         <span id="ballNumber" class="text-6xl sm:text-7xl">--</span>
                     </div>
                     <p id="lastCalledMessage" class="font-semibold mt-5 text-lg">Waiting to start...</p>
-                    <div id="nicknameExplanationDisplay" class="nickname-explanation text-2xl mt-2 h-24 sm:h-16"></div>
+                    <div id="nicknameExplanationDisplay" class="nickname-explanation text-2xl mt-2 h-20"></div>
                 </div>
             </div>
 
